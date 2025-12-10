@@ -71,7 +71,7 @@ UNKNOWN_COMMAND
 2$
 ^C
 $> pkill -SIGINT mini_db
-$> ./mint_db 1111 .save &
+$> ./mini_db 1111 .save &
 $> echo "GET B" | nc localhost 1111 | cat -e
 0 C$
 S>
