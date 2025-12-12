@@ -249,9 +249,6 @@ DELETE A
 より詳細なテストスイートを実行します：
 
 ```bash
-# 実行権限を付与（初回のみ）
-chmod +x completeTest.py
-
 # テスト実行
 python3 completeTest.py
 ```
