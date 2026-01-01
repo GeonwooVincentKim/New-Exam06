@@ -55,7 +55,6 @@ int main(int ac, char **av) {
 
     signal(SIGINT, save_db_and_exit);
     
-    // [▼▼▼ 이 줄이 빠져서 멈췄던 것입니다! 다시 넣었습니다. ▼▼▼]
     cout << "ready" << endl;  
 
     fd_set current_sockets, ready_sockets;
