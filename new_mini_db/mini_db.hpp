@@ -12,15 +12,17 @@
 #include <cstring>
 #include <cstdlib>
 
+using namespace std;
+
 // Global variables
-std::string g_filename;
-std::map<std::string, std::string> g_db;
+string g_filename;
+map<string, string> g_db;
 int g_sockfd = -1;
 
 void save_db_and_exit(int) {
-    std::ofstream file(g_filename.c_str());
+    ofstream file(g_filename.c_str());
     if (file.is_open()) {
-        for (std::map<std::string, std::string>::iterator it = g_db.begin(); it != g_db.end(); ++it)
+        for (map<string, string>::iterator it = g_db.begin(); it != g_db.end(); ++it)
             file << it->first << " " << it->second << "\n";
         file.close(); // [중요 수정] exit() 전에 반드시 닫아서 버퍼를 비워야 함
     }
@@ -28,20 +30,20 @@ void save_db_and_exit(int) {
     exit(0);
 }
 
-void send_res(int fd, const std::string &msg) {
+void send_res(int fd, const string &msg) {
     send(fd, msg.c_str(), msg.length(), 0);
 }
 
 int main(int ac, char **av) {
     if (ac != 3) {
-        std::cerr << "Usage: ./mini_db <port> <file>\n";
+        cerr << "Usage: ./mini_db <port> <file>\n";
         return 1;
     }
 
     g_filename = av[2];
-    std::ifstream infile(g_filename.c_str());
+    ifstream infile(g_filename.c_str());
     if (infile.is_open()) {
-        std::string key, val;
+        string key, val;
         while (infile >> key >> val) g_db[key] = val;
         infile.close();
     }
@@ -61,14 +63,14 @@ int main(int ac, char **av) {
     }
 
     signal(SIGINT, save_db_and_exit);
-    std::cout << "ready" << std::endl;
+    cout << "ready" << endl;
 
     fd_set current_sockets, ready_sockets;
     FD_ZERO(&current_sockets);
     FD_SET(g_sockfd, &current_sockets);
     int max_fd = g_sockfd;
     
-    std::map<int, std::string> buffers;
+    map<int, string> buffers;
 
     while (true) {
         ready_sockets = current_sockets;
@@ -94,13 +96,13 @@ int main(int ac, char **av) {
                         buf[bytes] = '\0';
                         buffers[i] += buf;
                         size_t pos = 0;
-                        while ((pos = buffers[i].find('\n')) != std::string::npos) {
-                            std::string line = buffers[i].substr(0, pos);
+                        while ((pos = buffers[i].find('\n')) != string::npos) {
+                            string line = buffers[i].substr(0, pos);
                             buffers[i].erase(0, pos + 1);
                             if (!line.empty() && line[line.length()-1] == '\r') line.erase(line.length()-1);
 
-                            std::stringstream ss(line);
-                            std::string cmd, key, val;
+                            stringstream ss(line);
+                            string cmd, key, val;
                             ss >> cmd >> key >> val;
 
                             if (cmd == "POST" && !key.empty() && !val.empty()) {
