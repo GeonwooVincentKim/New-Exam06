@@ -48,9 +48,16 @@ char *str_join(char *buf, char *add) {
 }
 
 void notify(int sender, char *s) {
+    int len = strlen(s);
     for (int fd = 0; fd <= max_fd; fd++) {
-        if (FD_ISSET(fd, &active) && fd != sender && fd != sockfd)
-            send(fd, s, strlen(s), 0);
+        if (FD_ISSET(fd, &active) && fd != sender && fd != sockfd) {
+            int sent = 0;
+            while (sent < len) {
+                int ret = send(fd, s + sent, len - sent, 0);
+                if (ret < 0) break; // 에러 발생 시 중단
+                sent += ret;
+            }
+        }
     }
 }
 
